@@ -185,3 +185,159 @@ a {
     border-top-left-radius: 80px; /* Borde redondeado pronunciado */
     box-shadow: -10px 10px 30px rgba(0,0,0,0.1);
 }
+
+/* --- Estilos de Autenticación y Formularios --- */
+.auth-body {
+    background-color: #f8fafc;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+    padding: 2rem;
+}
+
+.auth-card {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 20, 53, 0.05);
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-card h2 {
+    font-size: 1.8rem;
+    color: #001435;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: #001435;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #003087;
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.auth-footer a {
+    color: #003087;
+    font-weight: 600;
+}
+
+.alert-box {
+    padding: 0.8rem;
+    border-radius: 10px;
+    background-color: #fee2e2;
+    color: #991b1b;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.alert-success {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+/* --- Dashboard --- */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.dashboard-container h1 {
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    color: #001435;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.metric-card {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.metric-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #003087;
+    margin-top: 0.5rem;
+}
+
+.status-ok {
+    color: #16a34a;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.donation-item-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    border-radius: 16px;
+}
+
+.tag-status {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.hidden {
+    display: none !important;
+}
