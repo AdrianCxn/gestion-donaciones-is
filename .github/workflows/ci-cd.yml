@@ -1,0 +1,44 @@
+name: CI/CD Pipeline - Donaciones
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-coverage:
+    name: Pruebas Unitarias y Cobertura
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js (v20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependencias del proyecto
+        run: npm install
+
+      - name: Ejecutar suite de pruebas con Jest y verificar cobertura (>= 80%)
+        run: npm run test:coverage
+
+  deploy-simulation:
+    name: Despliegue Continuo (Staging)
+    needs: test-and-coverage
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Descargar codigo para despliegue
+        uses: actions/checkout@v4
+
+      - name: Simular despliegue en entorno de pruebas
+        run: |
+          echo "Pruebas unitarias aprobadas satisfactoriamente."
+          echo "Iniciando despliegue automatico en el servidor de pruebas..."
+          echo "Despliegue completado con exito en entorno Staging."
