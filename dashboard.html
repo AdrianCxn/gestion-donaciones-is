@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Donaciones</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-left">
+            <span class="logo"><span class="logo-icon">D</span></span>
+            <span id="user-badge" class="badge">Usuario</span>
+        </div>
+        <div class="nav-right">
+            <button id="logout-btn" class="btn btn-light">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <h1>Panel de Gestión</h1>
+
+        <!-- Métricas exclusivas para Administradores -->
+        <section id="admin-section" class="admin-grid hidden">
+            <div class="metric-card">
+                <h3>Total Usuarios</h3>
+                <p id="metric-users" class="metric-number">--</p>
+            </div>
+            <div class="metric-card">
+                <h3>Total Donaciones</h3>
+                <p id="metric-donations" class="metric-number">--</p>
+            </div>
+            <div class="metric-card">
+                <h3>Estado Sistema</h3>
+                <p id="metric-status" class="metric-number status-ok">--</p>
+            </div>
+        </section>
+
+        <!-- Listado de Donaciones para todos los roles autorizados -->
+        <section class="donations-section">
+            <h2>Donaciones Disponibles y en Proceso</h2>
+            <div id="donations-container" class="cards-grid">
+                <!-- Se llena dinámicamente con JS -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        const username = localStorage.getItem('username');
+
+        // Control de acceso: Redireccionar si no hay sesión
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('user-badge').textContent = `${username} (${role.toUpperCase()})`;
+
+        // Botón de Cerrar Sesión
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        // Cargar datos al iniciar
+        async function initDashboard() {
+            // 1. Cargar Donaciones generales
+            try {
+                const res = await fetch('/api/donations', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.status === 401 || res.status === 403) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return;
+                }
+                const data = await res.json();
+                const container = document.getElementById('donations-container');
+                container.innerHTML = '';
+
+                data.donations.forEach(d => {
+                    const card = document.createElement('div');
+                    card.className = 'donation-item-card';
+                    card.innerHTML = `
+                        <h3>${d.title}</h3>
+                        <p><strong>Donante:</strong> ${d.donor}</p>
+                        <p><strong>Estado:</strong> <span class="tag-status">${d.status}</span></p>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+
+            // 2. Si es Administrador, consultar métricas protegidas
+            if (role === 'administrador') {
+                try {
+                    const resAdmin = await fetch('/api/admin/metrics', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (resAdmin.ok) {
+                        const metrics = await resAdmin.json();
+                        document.getElementById('admin-section').classList.remove('hidden');
+                        document.getElementById('metric-users').textContent = metrics.totalUsers;
+                        document.getElementById('metric-donations').textContent = metrics.totalDonations;
+                        document.getElementById('metric-status').textContent = metrics.status;
+                    }
+                } catch (err) {
+                    console.error('Error cargando métricas administrativas');
+                }
+            }
+        }
+
+        initDashboard();
+    </script>
+</body>
+</html>
