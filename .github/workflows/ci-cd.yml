@@ -1,6 +1,5 @@
 name: CI/CD Pipeline - Donaciones
 
-# Disparadores: se ejecuta al hacer push a main o al abrir un Pull Request hacia main
 on:
   push:
     branches: [ "main" ]
@@ -16,10 +15,10 @@ jobs:
       - name: Descargar codigo fuente
         uses: actions/checkout@v4
 
-      - name: Configurar Node.js (v18)
+      - name: Configurar Node.js (v20)
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
 
       - name: Instalar dependencias del proyecto
