@@ -4,16 +4,19 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
+    types: [opened, synchronize, reopened]
     branches: [ "main" ]
 
 jobs:
   test-and-coverage:
-    name: Pruebas Unitarias y Cobertura
+    name: Pruebas Unitarias, Cobertura y SonarQube
     runs-on: ubuntu-latest
 
     steps:
       - name: Descargar codigo fuente
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Requerido por SonarQube para analizar el historial
 
       - name: Configurar Node.js (v20)
         uses: actions/setup-node@v4
@@ -24,8 +27,13 @@ jobs:
       - name: Instalar dependencias del proyecto
         run: npm install
 
-      - name: Ejecutar suite de pruebas con Jest y verificar cobertura (>= 80%)
+      - name: Ejecutar suite de pruebas con Jest y generar cobertura
         run: npm run test:coverage
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   deploy-simulation:
     name: Despliegue Continuo (Staging)
@@ -39,6 +47,6 @@ jobs:
 
       - name: Simular despliegue en entorno de pruebas
         run: |
-          echo "Pruebas unitarias aprobadas satisfactoriamente."
+          echo "Pruebas unitarias aprobadas y calidad verificada con SonarQube."
           echo "Iniciando despliegue automatico en el servidor de pruebas..."
           echo "Despliegue completado con exito en entorno Staging."
