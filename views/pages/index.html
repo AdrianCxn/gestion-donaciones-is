@@ -1,0 +1,41 @@
+<main class="hero-section" data-page="home">
+    <div class="hero-content">
+        <h1 class="hero-title"><span class="hero-word">El cambio</span> <span class="hero-word">comienza</span> <span class="hero-word highlight">con tu empresa.</span></h1>
+        <p class="hero-subtitle">Convierte los recursos disponibles de tu empresa en oportunidades reales para las comunidades que más los necesitan.</p>
+        <div class="hero-buttons">
+            <a href="/registro.html" class="btn btn-primary">Activa tu impacto</a>
+            <a href="#proceso" class="btn btn-outline">Conoce el proceso</a>
+        </div>
+    </div>
+    <div class="hero-image-container">
+        <div class="blue-shape"></div>
+        <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=2070&auto=format&fit=crop" alt="Manos unidas en apoyo social" class="hero-img">
+    </div>
+</main>
+
+<section id="proceso" class="landing-section process-section">
+    <div class="landing-section-heading"><p class="eyebrow">CÓMO FUNCIONA</p><h2>Una ruta clara para que cada donación <span class="highlight">llegue más lejos.</span></h2></div>
+    <div class="process-line" aria-hidden="true"><span></span></div>
+    <div class="process-grid">
+        <article class="info-block"><span class="step-number">01</span><h3>Publica</h3><p>Tu empresa registra el recurso, la cantidad disponible y el centro de acopio.</p></article>
+        <article class="info-block"><span class="step-number">02</span><h3>Conecta</h3><p>Las organizaciones consultan el catálogo y solicitan lo que necesitan.</p></article>
+        <article class="info-block"><span class="step-number">03</span><h3>Confirma</h3><p>El estado se actualiza hasta confirmar que la donación fue recibida.</p></article>
+    </div>
+</section>
+
+<section class="landing-section audience-section">
+    <article id="donantes" class="audience-block"><p class="eyebrow">DONANTES</p><h2><span class="highlight">Haz que</span> los recursos de tu empresa lleguen más lejos.</h2><p>Publica alimentos, ropa, enseres o equipamiento y conecta el compromiso de tu empresa con organizaciones que trabajan por sus comunidades.</p><a href="/registro.html" class="text-link">Crear cuenta de empresa &rarr;</a></article>
+    <article id="organizaciones" class="audience-block audience-block-accent"><p class="eyebrow">ORGANIZACIONES</p><h2><span class="highlight">Encuentra</span> recursos para tu comunidad.</h2><p>Explora donaciones activas, filtra por categoría y consulta el historial de cada recurso antes de solicitarlo.</p><a href="/registro.html" class="text-link">Registrarme como organización &rarr;</a></article>
+    <article id="centros-de-acopio" class="audience-block"><p class="eyebrow">CENTROS DE ACOPIO</p><h2><span class="highlight">Coordina</span> entregas con mejor visibilidad.</h2><p><span class="highlight">Centraliza</span> la ubicación de los recursos y ayuda a que donantes y organizaciones compartan el mismo estado de cada entrega.</p><a href="#ayuda" class="text-link">Hablar con GIVERA &rarr;</a></article>
+</section>
+
+<section id="ayuda" class="landing-section help-section">
+    <div class="help-copy"><p class="eyebrow">AYUDA</p><h2>¿Tienes preguntas sobre el <span class="highlight">proceso</span>?</h2><p>Déjanos tus datos y te orientamos sobre registro, publicación de recursos y coordinación con centros de acopio.</p></div>
+    <form id="contact-form" class="contact-form">
+        <label for="contact-name">Nombre<input id="contact-name" name="name" autocomplete="name" required></label>
+        <label for="contact-email">Correo electrónico<input id="contact-email" name="email" type="email" autocomplete="email" required></label>
+        <label for="contact-message">¿En qué podemos ayudarte?<textarea id="contact-message" name="message" rows="3" required></textarea></label>
+        <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+        <p id="contact-feedback" class="contact-feedback" aria-live="polite"></p>
+    </form>
+</section>

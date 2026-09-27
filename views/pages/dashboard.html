@@ -1,0 +1,42 @@
+<main class="dashboard-container" data-page="dashboard">
+    <div class="dashboard-heading">
+        <div>
+            <p class="eyebrow">GIVERA</p>
+            <h1>Panel de Gestión</h1>
+        </div>
+        <p id="dashboard-feedback" class="dashboard-feedback" aria-live="polite"></p>
+    </div>
+
+    <section id="admin-section" class="admin-grid hidden">
+        <div class="metric-card"><h3>Total Usuarios</h3><p id="metric-users" class="metric-number">--</p></div>
+        <div class="metric-card"><h3>Total Donaciones</h3><p id="metric-donations" class="metric-number">--</p></div>
+        <div class="metric-card"><h3>Donaciones activas</h3><p id="metric-active-donations" class="metric-number">--</p></div>
+    </section>
+
+    <section id="donor-section" class="dashboard-section hidden">
+        <div class="section-heading">
+            <div><p id="donor-eyebrow" class="eyebrow">PUBLICAR RECURSO</p><h2 id="donor-section-title">Registrar una donación</h2></div>
+            <p id="donor-section-description">Comparte un lote para que una organización pueda solicitarlo.</p>
+        </div>
+        <form id="donation-form" class="donation-form">
+            <div class="form-group form-group-wide"><label for="donation-title">Título / descripción del lote</label><input id="donation-title" name="title" placeholder="Ej. 50 cajas de alimentos no perecederos" required></div>
+            <div class="form-group"><label for="donation-category">Categoría</label><select id="donation-category" name="category" required><option value="">Selecciona una categoría</option><option>Alimentos</option><option>Ropa</option><option>Enseres</option><option>Equipamiento médico</option><option>Otros</option></select></div>
+            <div class="form-group"><label for="donation-quantity">Cantidad / unidades</label><input id="donation-quantity" name="quantity" type="number" min="1" step="1" inputmode="numeric" placeholder="Ej. 50" required></div>
+            <div class="form-group form-group-wide"><label for="donation-location">Ubicación o centro de acopio</label><input id="donation-location" name="location" placeholder="Ej. Plaza Mayor" required></div>
+            <button type="submit" class="btn btn-primary">Publicar donación</button>
+        </form>
+    </section>
+
+    <section class="donations-section dashboard-section">
+        <div class="section-heading">
+            <div><p class="eyebrow">CATÁLOGO</p><h2 id="catalog-title">Donaciones activas</h2></div>
+            <p id="catalog-description">Consulta los recursos disponibles para tu organización.</p>
+        </div>
+        <div id="organization-filters" class="filter-bar hidden">
+            <label>Filtrar por categoría <select id="filter-category"><option value="">Todas</option><option>Alimentos</option><option>Ropa</option><option>Enseres</option><option>Equipamiento médico</option><option>Otros</option></select></label>
+            <label>Filtrar por estado <select id="filter-status"><option value="">Todos</option><option>Disponible</option><option>En proceso</option><option>Completada</option></select></label>
+        </div>
+        <div id="donations-container" class="cards-grid"></div>
+        <p id="empty-donations" class="empty-state hidden">No hay donaciones que coincidan con los filtros.</p>
+    </section>
+</main>
