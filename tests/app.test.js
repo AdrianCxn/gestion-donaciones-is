@@ -1,3 +1,7 @@
+process.env.ADMIN_PASSWORD = 'test-admin-password';
+process.env.DONOR_PASSWORD = 'test-donor-password';
+process.env.ORGANIZATION_PASSWORD = 'test-organization-password';
+
 const request = require('supertest');
 const app = require('../app');
 
@@ -72,7 +76,7 @@ describe('Suite de Pruebas Automatizadas - Modulo de Usuarios y Seguridad', () =
             .post('/api/login')
             .send({
                 username: 'Givera',
-                password: 'admin6776'
+                password: 'test-admin-password'
             });
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('token');
@@ -218,7 +222,7 @@ describe('Suite de Pruebas Automatizadas - Modulo de Usuarios y Seguridad', () =
 
         const organizationLogin = await request(app)
             .post('/api/login')
-            .send({ username: 'Cruz Roja', password: 'cruzroja6776' });
+            .send({ username: 'Cruz Roja', password: 'test-organization-password' });
         const organizationToken = organizationLogin.body.token;
 
         const missingDetail = await request(app)

@@ -7,12 +7,14 @@ const pool = databaseEnabled ? new Pool({
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined
 }) : null;
 
+    const seedUsers = [
+        { username: 'Givera', password: process.env.ADMIN_PASSWORD, role: 'administrador' },
+        { username: 'Universidad Tecmilenio', password: process.env.DONOR_PASSWORD, role: 'donante' },
+        { username: 'Cruz Roja', password: process.env.ORGANIZATION_PASSWORD, role: 'organizacion' }
+    ];
+
 const memory = {
-    users: [
-        { id: 1, username: 'Givera', password: 'admin6776', role: 'administrador' },
-        { id: 2, username: 'Universidad Tecmilenio', password: 'tecmi6776', role: 'donante' },
-        { id: 3, username: 'Cruz Roja', password: 'cruzroja6776', role: 'organizacion' }
-    ],
+        users: seedUsers.map((user, index) => ({ id: index + 1, ...user })),
     donations: [
         {
             id: 1, ownerId: 2, title: 'Lote de Verduras Frescas (50 kg)', category: 'Alimentos', quantity: 50,
@@ -32,6 +34,9 @@ const donationCategories = ['Alimentos', 'Ropa', 'Enseres', 'Equipamiento médic
 const donationStatuses = ['Disponible', 'En proceso', 'Completada'];
 
 async function initializeDatabase() {
+    if (seedUsers.some((user) => !user.password)) {
+        throw new Error('Configura ADMIN_PASSWORD, DONOR_PASSWORD y ORGANIZATION_PASSWORD.');
+    }
     if (!databaseEnabled) return;
     await pool.query(`
         CREATE TABLE IF NOT EXISTS users (
@@ -64,14 +69,9 @@ async function initializeDatabase() {
 
     const usersResult = await pool.query('SELECT COUNT(*)::int AS count FROM users');
     if (usersResult.rows[0].count === 0) {
-        const seeds = [
-            ['Givera', 'admin6776', 'administrador'],
-            ['Universidad Tecmilenio', 'tecmi6776', 'donante'],
-            ['Cruz Roja', 'cruzroja6776', 'organizacion']
-        ];
-        for (const [username, password, role] of seeds) {
-            const passwordHash = await bcrypt.hash(password, 12);
-            await pool.query('INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3)', [username, passwordHash, role]);
+        for (const seed of seedUsers) {
+            const passwordHash = await bcrypt.hash(seed.password, 12);
+            await pool.query('INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3)', [seed.username, passwordHash, seed.role]);
         }
     }
 
