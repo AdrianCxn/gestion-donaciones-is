@@ -119,14 +119,44 @@ async function dashboard() {
         document.getElementById('donor-section-description').textContent = 'Publica y supervisa recursos para mantener actualizado el catálogo.';
     }
 
-    const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
     const statusClass = (status) => status.toLowerCase().replace(' ', '-');
     const renderDonations = () => {
         const category = document.getElementById('filter-category')?.value || '';
         const status = document.getElementById('filter-status')?.value || '';
         const visibleDonations = donations.filter((donation) => (!category || donation.category === category) && (!status || donation.status === status));
         document.getElementById('empty-donations').classList.toggle('hidden', visibleDonations.length > 0);
-        donationsContainer.innerHTML = visibleDonations.map((donation) => `<a class="donation-item-card" href="/donations/${donation.id}"><div class="card-topline"><span class="donation-category">${escapeHtml(donation.category)}</span><span class="status-badge status-${statusClass(donation.status)}">${escapeHtml(donation.status)}</span></div><h3>${escapeHtml(donation.title)}</h3><p><strong>${escapeHtml(donation.quantity)}</strong> · ${escapeHtml(donation.location)}</p><span class="card-link">Ver detalle <span aria-hidden="true">&rarr;</span></span></a>`).join('');
+        const cards = visibleDonations.map((donation) => {
+            const card = document.createElement('a');
+            card.className = 'donation-item-card';
+            card.href = `/donations/${donation.id}`;
+
+            const topline = document.createElement('div');
+            topline.className = 'card-topline';
+            const category = document.createElement('span');
+            category.className = 'donation-category';
+            category.textContent = donation.category;
+            const status = document.createElement('span');
+            status.className = `status-badge status-${statusClass(donation.status)}`;
+            status.textContent = donation.status;
+            topline.append(category, status);
+
+            const title = document.createElement('h3');
+            title.textContent = donation.title;
+            const summary = document.createElement('p');
+            const quantity = document.createElement('strong');
+            quantity.textContent = donation.quantity;
+            summary.append(quantity, document.createTextNode(` · ${donation.location}`));
+            const detailLink = document.createElement('span');
+            detailLink.className = 'card-link';
+            detailLink.append(document.createTextNode('Ver detalle '));
+            const arrow = document.createElement('span');
+            arrow.setAttribute('aria-hidden', 'true');
+            arrow.textContent = '→';
+            detailLink.appendChild(arrow);
+            card.append(topline, title, summary, detailLink);
+            return card;
+        });
+        donationsContainer.replaceChildren(...cards);
     };
 
     const showDashboardMessage = (text, isError = false) => {
@@ -206,7 +236,6 @@ async function donationDetail() {
         window.location.replace('/login.html');
     });
 
-    const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
     const statusClass = (status) => status.toLowerCase().replace(' ', '-');
     const donationId = window.location.pathname.split('/').pop();
     const loading = document.getElementById('detail-loading');
@@ -223,8 +252,29 @@ async function donationDetail() {
         const status = document.getElementById('detail-status');
         status.textContent = donation.status;
         status.classList.add(`status-${statusClass(donation.status)}`);
-        document.getElementById('detail-content').innerHTML = `<div><span>Donante</span><strong>${escapeHtml(donation.donor)}</strong></div><div><span>Categoría</span><strong>${escapeHtml(donation.category)}</strong></div><div><span>Cantidad</span><strong>${escapeHtml(donation.quantity)}</strong></div><div><span>Ubicación</span><strong>${escapeHtml(donation.location)}</strong></div>`;
-        document.getElementById('detail-history').innerHTML = donation.history.map((event) => `<li><span class="status-badge status-${statusClass(event.status)}">${escapeHtml(event.status)}</span><span>${new Date(event.changedAt).toLocaleString('es-MX')} · ${escapeHtml(event.changedBy)}</span></li>`).join('');
+        const detailContent = document.getElementById('detail-content');
+        const detailFields = [['Donante', donation.donor], ['Categoría', donation.category], ['Cantidad', donation.quantity], ['Ubicación', donation.location]];
+        detailContent.replaceChildren(...detailFields.map(([label, value]) => {
+            const field = document.createElement('div');
+            const fieldLabel = document.createElement('span');
+            fieldLabel.textContent = label;
+            const fieldValue = document.createElement('strong');
+            fieldValue.textContent = value;
+            field.append(fieldLabel, fieldValue);
+            return field;
+        }));
+
+        const historyItems = donation.history.map((historyEvent) => {
+            const item = document.createElement('li');
+            const historyStatus = document.createElement('span');
+            historyStatus.className = `status-badge status-${statusClass(historyEvent.status)}`;
+            historyStatus.textContent = historyEvent.status;
+            const historyDetails = document.createElement('span');
+            historyDetails.textContent = `${new Date(historyEvent.changedAt).toLocaleString('es-MX')} · ${historyEvent.changedBy}`;
+            item.append(historyStatus, historyDetails);
+            return item;
+        });
+        document.getElementById('detail-history').replaceChildren(...historyItems);
 
         const nextStatus = role === 'organizacion' && donation.status === 'Disponible' ? 'En proceso' : role === 'organizacion' && donation.status === 'En proceso' ? 'Completada' : '';
         if (nextStatus) {
