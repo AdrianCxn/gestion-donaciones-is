@@ -1,8 +1,8 @@
 {
-  "name": "proyectofinal",
+  "name": "givera-platform",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "GIVERA - Plataforma web para la gestión eficiente y transparente de donaciones",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "jest --detectOpenHandles",
@@ -21,8 +21,10 @@
   },
   "homepage": "https://github.com/AdrianCxn/gestion-donaciones-is#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.23.0"
   },
   "devDependencies": {
     "jest": "^30.5.2",
