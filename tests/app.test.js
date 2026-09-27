@@ -186,4 +186,56 @@ describe('Suite de Pruebas Automatizadas - Modulo de Usuarios y Seguridad', () =
             .send({ name: 'Ana', email: 'correo-invalido', message: 'Necesito orientación.' });
         expect(invalid.statusCode).toBe(400);
     });
+
+    it('Debe cubrir validaciones y errores de seguridad de la API', async () => {
+        const missingContact = await request(app)
+            .post('/api/contact')
+            .send({ name: 'Ana', email: 'ana@example.com' });
+        expect(missingContact.statusCode).toBe(400);
+
+        const invalidToken = await request(app)
+            .get('/api/donations')
+            .set('Authorization', 'Bearer token-invalido');
+        expect(invalidToken.statusCode).toBe(401);
+
+        const missingDonation = await request(app)
+            .post('/api/donations')
+            .set('Authorization', `Bearer ${donorToken}`)
+            .send({ title: ' incompleta ' });
+        expect(missingDonation.statusCode).toBe(400);
+
+        const invalidQuantity = await request(app)
+            .post('/api/donations')
+            .set('Authorization', `Bearer ${donorToken}`)
+            .send({ title: 'Prueba', category: 'Otros', quantity: 0, location: 'Centro' });
+        expect(invalidQuantity.statusCode).toBe(400);
+
+        const invalidCategory = await request(app)
+            .post('/api/donations')
+            .set('Authorization', `Bearer ${donorToken}`)
+            .send({ title: 'Prueba', category: 'No existe', quantity: 1, location: 'Centro' });
+        expect(invalidCategory.statusCode).toBe(400);
+
+        const organizationLogin = await request(app)
+            .post('/api/login')
+            .send({ username: 'Cruz Roja', password: 'cruzroja6776' });
+        const organizationToken = organizationLogin.body.token;
+
+        const missingDetail = await request(app)
+            .get('/api/donations/9999')
+            .set('Authorization', `Bearer ${organizationToken}`);
+        expect(missingDetail.statusCode).toBe(404);
+
+        const invalidTransition = await request(app)
+            .put('/api/donations/1')
+            .set('Authorization', `Bearer ${organizationToken}`)
+            .send({ status: 'Completada' });
+        expect(invalidTransition.statusCode).toBe(400);
+
+        const donorTransition = await request(app)
+            .put('/api/donations/1')
+            .set('Authorization', `Bearer ${donorToken}`)
+            .send({ status: 'En proceso' });
+        expect(donorTransition.statusCode).toBe(403);
+    });
 });

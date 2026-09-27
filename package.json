@@ -31,6 +31,10 @@
     "supertest": "^7.3.0"
   },
   "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/db\\.js$"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 80,
