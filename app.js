@@ -1,11 +1,12 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const path = require('path');
+const path = require('node:path');
 const fs = require('fs');
 const db = require('./db');
 
 const app = express();
 
+app.disable('x-powered-by');
 app.use(express.json());
 
 const viewsPath = path.join(__dirname, 'views');
@@ -107,7 +108,7 @@ app.post('/api/login', async (req, res) => {
 // Middleware de verificación de JWT
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = authHeader?.split(' ')[1];
 
     if (!token) {
         return res.status(403).json({ error: 'Acceso denegado: Token requerido.' });

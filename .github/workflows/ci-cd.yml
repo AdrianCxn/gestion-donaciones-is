@@ -25,7 +25,7 @@ jobs:
           cache: 'npm'
 
       - name: Instalar dependencias del proyecto
-        run: npm install
+        run: npm ci
 
       - name: Ejecutar suite de pruebas con Jest y generar cobertura
         run: npm run test:coverage
