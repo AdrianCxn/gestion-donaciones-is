@@ -27,7 +27,8 @@ const memory = {
             history: [{ status: 'En proceso', changedAt: new Date().toISOString(), changedBy: 'Universidad Tecmilenio' }]
         }
     ],
-    contacts: []
+    contacts: [],
+    settings: { registrationOpen: true }
 };
 
 const donationCategories = ['Alimentos', 'Ropa', 'Enseres', 'Equipamiento médico', 'Otros'];
@@ -65,6 +66,14 @@ async function initializeDatabase() {
             message TEXT NOT NULL,
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
+        CREATE TABLE IF NOT EXISTS app_settings (
+            key VARCHAR(80) PRIMARY KEY,
+            value_boolean BOOLEAN NOT NULL,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        INSERT INTO app_settings (key, value_boolean)
+        VALUES ('registration_open', TRUE)
+        ON CONFLICT (key) DO NOTHING;
     `);
 
     const usersResult = await pool.query('SELECT COUNT(*)::int AS count FROM users');
@@ -118,6 +127,23 @@ async function createUser(username, password, role) {
         if (error.code === '23505') return null;
         throw error;
     }
+}
+
+async function isRegistrationOpen() {
+    await ready;
+    if (!databaseEnabled) return memory.settings.registrationOpen;
+    const result = await pool.query('SELECT value_boolean FROM app_settings WHERE key = $1', ['registration_open']);
+    return result.rows[0]?.value_boolean ?? true;
+}
+
+async function setRegistrationOpen(registrationOpen) {
+    await ready;
+    if (!databaseEnabled) {
+        memory.settings.registrationOpen = registrationOpen;
+        return registrationOpen;
+    }
+    await pool.query('UPDATE app_settings SET value_boolean = $1, updated_at = NOW() WHERE key = $2', [registrationOpen, 'registration_open']);
+    return registrationOpen;
 }
 
 function mapDonation(row) {
@@ -189,4 +215,4 @@ async function createContact({ name, email, message }) {
     await pool.query('INSERT INTO contact_requests (name, email, message) VALUES ($1, $2, $3)', [name, email, message]);
 }
 
-module.exports = { databaseEnabled, ensureReady, isAdminRole, donationCategories, donationStatuses, findUser, createUser, listDonations, getDonation, createDonation, updateDonation, getMetrics, createContact };
+module.exports = { databaseEnabled, ensureReady, isAdminRole, donationCategories, donationStatuses, findUser, createUser, isRegistrationOpen, setRegistrationOpen, listDonations, getDonation, createDonation, updateDonation, getMetrics, createContact };

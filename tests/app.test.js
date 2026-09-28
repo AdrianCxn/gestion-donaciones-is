@@ -104,6 +104,46 @@ describe('Suite de Pruebas Automatizadas - Modulo de Usuarios y Seguridad', () =
         expect(res.body).toHaveProperty('totalUsers');
     });
 
+    it('Debe permitir pausar registros durante la presentación', async () => {
+        const initialStatus = await request(app).get('/api/settings/registration');
+        expect(initialStatus.statusCode).toBe(200);
+        expect(initialStatus.body.registrationOpen).toBe(true);
+
+        const invalidSetting = await request(app)
+            .put('/api/admin/settings/registration')
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({ registrationOpen: 'false' });
+        expect(invalidSetting.statusCode).toBe(400);
+
+        const donorLogin = await request(app)
+            .post('/api/login')
+            .send({ username: 'empresa_alimentos_sa', password: 'PasswordSegura2026!' });
+        const donorSetting = await request(app)
+            .put('/api/admin/settings/registration')
+            .set('Authorization', `Bearer ${donorLogin.body.token}`)
+            .send({ registrationOpen: false });
+        expect(donorSetting.statusCode).toBe(403);
+
+        const pause = await request(app)
+            .put('/api/admin/settings/registration')
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({ registrationOpen: false });
+        expect(pause.statusCode).toBe(200);
+        expect(pause.body.registrationOpen).toBe(false);
+
+        const blocked = await request(app)
+            .post('/api/register')
+            .send({ username: 'registro_bloqueado', password: 'PasswordSegura2026!', role: 'donante' });
+        expect(blocked.statusCode).toBe(403);
+        expect(blocked.body.error).toMatch(/presentación/);
+
+        const resume = await request(app)
+            .put('/api/admin/settings/registration')
+            .set('Authorization', `Bearer ${adminToken}`)
+            .send({ registrationOpen: true });
+        expect(resume.statusCode).toBe(200);
+    });
+
     // 8. Ruta de metricas: Denegado para donantes (403 Forbidden)
     it('Debe prohibir el acceso a metricas administrativas a usuarios con rol donante', async () => {
         const loginRes = await request(app)

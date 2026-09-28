@@ -372,6 +372,74 @@ body[data-page="home"] .navbar {
     border: 1px solid #e2e8f0;
 }
 
+.setting-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.setting-card h3 {
+    font-size: 0.95rem;
+}
+
+.setting-card p {
+    margin-top: 0.35rem;
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+    flex: 0 0 auto;
+}
+
+.switch input {
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: #cbd5e1;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.switch-slider::before {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 3px;
+    left: 4px;
+    border-radius: 50%;
+    background: #ffffff;
+    content: '';
+    transition: transform 0.2s;
+}
+
+.switch input:checked + .switch-slider {
+    background: #013968;
+}
+
+.switch input:checked + .switch-slider::before {
+    transform: translateX(20px);
+}
+
+.switch input:focus-visible + .switch-slider {
+    outline: 3px solid rgba(1, 57, 104, 0.2);
+}
+
+.registration-paused {
+    margin-bottom: 1rem;
+}
+
 .metric-number {
     font-size: 2rem;
     font-weight: 800;

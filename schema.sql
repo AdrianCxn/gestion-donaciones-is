@@ -26,3 +26,13 @@ CREATE TABLE IF NOT EXISTS contact_requests (
     message TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS app_settings (
+    key VARCHAR(80) PRIMARY KEY,
+    value_boolean BOOLEAN NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO app_settings (key, value_boolean)
+VALUES ('registration_open', TRUE)
+ON CONFLICT (key) DO NOTHING;
