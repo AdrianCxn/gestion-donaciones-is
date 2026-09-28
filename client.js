@@ -91,6 +91,23 @@ async function register(event) {
     }
 }
 
+async function initializeRegistrationAvailability() {
+    const form = document.getElementById('register-form');
+    const pausedMessage = document.getElementById('registration-paused');
+    try {
+        const response = await fetch('/api/settings/registration');
+        const data = await response.json();
+        if (response.ok && !data.registrationOpen) {
+            form.classList.add('registration-disabled');
+            form.querySelectorAll('input, select, button').forEach((control) => { control.disabled = true; });
+            pausedMessage.classList.remove('hidden');
+        }
+    } catch (error) {
+        pausedMessage.textContent = 'No se pudo comprobar la disponibilidad del registro.';
+        pausedMessage.classList.remove('hidden');
+    }
+}
+
 async function dashboard() {
     const token = localStorage.getItem('token');
     const role = (localStorage.getItem('role') || '').toLowerCase();
@@ -216,6 +233,21 @@ async function dashboard() {
                 animateMetric(document.getElementById('metric-users'), metrics.totalUsers);
                 animateMetric(document.getElementById('metric-donations'), metrics.totalDonations);
                 animateMetric(document.getElementById('metric-active-donations'), metrics.activeDonations);
+                const registrationToggle = document.getElementById('registration-toggle');
+                const registrationStatus = document.getElementById('registration-setting-status');
+                registrationToggle.checked = metrics.registrationOpen;
+                registrationStatus.textContent = metrics.registrationOpen ? 'Disponible' : 'Pausado para la presentación';
+                registrationToggle.addEventListener('change', async () => {
+                    registrationToggle.disabled = true;
+                    const response = await fetch('/api/admin/settings/registration', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                        body: JSON.stringify({ registrationOpen: registrationToggle.checked })
+                    });
+                    if (!response.ok) registrationToggle.checked = !registrationToggle.checked;
+                    registrationStatus.textContent = registrationToggle.checked ? 'Disponible' : 'Pausado para la presentación';
+                    registrationToggle.disabled = false;
+                });
             }
         }
     } catch (error) {
@@ -331,3 +363,4 @@ document.getElementById('contact-form')?.addEventListener('submit', async (event
 if (page === 'dashboard') dashboard();
 if (page === 'donation-detail') donationDetail();
 if (page === 'home') initializeLandingAnimations();
+if (page === 'register') initializeRegistrationAvailability();

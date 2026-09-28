@@ -47,6 +47,10 @@ const { donationCategories, donationStatuses, isAdminRole } = db;
 
 // Endpoint: Registro de usuarios
 app.post('/api/register', async (req, res) => {
+    if (!await db.isRegistrationOpen()) {
+        return res.status(403).json({ error: 'Los registros no están disponibles mientras la presentación esté en curso.' });
+    }
+
     const { username, password, role } = req.body;
 
     if (!username || !password || !role) {
@@ -67,6 +71,11 @@ app.post('/api/register', async (req, res) => {
         message: 'Usuario registrado exitosamente',
         user: { id: newUser.id, username: newUser.username, role: newUser.role }
     });
+});
+
+// Endpoint público: consultar si el registro está disponible
+app.get('/api/settings/registration', async (req, res) => {
+    res.status(200).json({ registrationOpen: await db.isRegistrationOpen() });
 });
 
 // Endpoint público: recepción de solicitudes de contacto del landing
@@ -138,7 +147,17 @@ const authorizeRoles = (...allowedRoles) => {
 
 // Endpoint protegido: Panel de administración
 app.get('/api/admin/metrics', authenticateToken, authorizeRoles('administrador'), async (req, res) => {
-    res.status(200).json(await db.getMetrics());
+    res.status(200).json({ ...await db.getMetrics(), registrationOpen: await db.isRegistrationOpen() });
+});
+
+// Endpoint protegido: activar o pausar registros durante una presentación
+app.put('/api/admin/settings/registration', authenticateToken, authorizeRoles('administrador'), async (req, res) => {
+    const { registrationOpen } = req.body;
+    if (typeof registrationOpen !== 'boolean') {
+        return res.status(400).json({ error: 'registrationOpen debe ser booleano.' });
+    }
+    const value = await db.setRegistrationOpen(registrationOpen);
+    res.status(200).json({ registrationOpen: value });
 });
 
 // Endpoint protegido: listado de donaciones según el rol autenticado
